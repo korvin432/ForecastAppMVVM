@@ -1,7 +1,5 @@
-package com.mindyapps.android.forecastmvvm.data.response
+package com.mindyapps.android.forecastmvvm.data.network.response
 
-
-import com.google.gson.annotations.SerializedName
 
 data class Request(
     val language: String,
