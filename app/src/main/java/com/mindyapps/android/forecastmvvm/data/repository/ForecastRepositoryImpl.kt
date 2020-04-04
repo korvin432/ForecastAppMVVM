@@ -29,13 +29,11 @@ class ForecastRepositoryImpl(
         }
     }
 
-
     private fun persistFetchedCurrentWeather(fetchedWeather: CurrentWeatherResponse) {
         GlobalScope.launch(Dispatchers.IO) {
             currentWeatherDao.upsert(fetchedWeather.currentWeatherEntry)
         }
     }
-
 
     private suspend fun initWeatherData() {
         if (isFetchCurrentNeeded(ZonedDateTime.now().minusHours(1)))

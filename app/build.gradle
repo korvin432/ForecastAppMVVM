@@ -77,7 +77,7 @@ dependencies {
     implementation "org.kodein.di:kodein-di-framework-android-x:$kodein_version"
 
     // Better dateTime-time support even on older Android versions
-    implementation "com.jakewharton.threetenabp:threetenabp:1.1.0"
+    implementation "com.jakewharton.threetenabp:threetenabp:1.2.3"
 
     // Glide
     implementation 'com.github.bumptech.glide:glide:4.8.0'

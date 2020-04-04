@@ -10,17 +10,20 @@ import androidx.lifecycle.ViewModelProvider
 
 import com.mindyapps.android.forecastmvvm.R
 import com.mindyapps.android.forecastmvvm.data.network.*
+import com.mindyapps.android.forecastmvvm.ui.base.ScopedFragment
 import kotlinx.android.synthetic.main.current_weather_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.kodein.di.Kodein
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.x.closestKodein
+import org.kodein.di.generic.instance
 
-class CurrentWeatherFragment : Fragment() {
+class CurrentWeatherFragment : ScopedFragment(), KodeinAware {
 
-    companion object {
-        fun newInstance() =
-            CurrentWeatherFragment()
-    }
+    override val kodein by closestKodein()
+    private val viewModelFactory: CurrentWeatherViewModelFactory by instance()
 
     private lateinit var viewModel: CurrentWeatherViewModel
 
@@ -33,18 +36,18 @@ class CurrentWeatherFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(CurrentWeatherViewModel::class.java)
-        // TODO: Use the ViewModel
-        val apiService = WeatherApiService(ConnectivityInterceptorImpl(this.context!!))
-        val weatherNetworkDataSource = WeatherNetworkDataSourceImpl(apiService)
+        viewModel = ViewModelProvider(this, viewModelFactory)
+            .get(CurrentWeatherViewModel::class.java)
+        bindUI()
+    }
 
-        weatherNetworkDataSource.downloadedCurrentWeather.observe(viewLifecycleOwner, Observer {
+    private fun bindUI() = launch{
+        val currentWeather = viewModel.weather.await()
+        currentWeather.observe(viewLifecycleOwner, Observer {
+            if (it == null) return@Observer
+
             text_view.text = it.toString()
         })
-
-        GlobalScope.launch(Dispatchers.Main) {
-            weatherNetworkDataSource.fetchCurrentWeather("London")
-        }
     }
 
 }
